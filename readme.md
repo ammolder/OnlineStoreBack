@@ -2,9 +2,9 @@
 
 * The shop sells sport clothes
 * Buyer can add and remove items from the shoping cart and creat an order.
-  _sorting by price;
-  _search by name;
-  _shoping cart and order creation.
+  - sorting by price;
+  - search by name;
+  - shoping cart and order creation.
 
 
 ### Команди:

@@ -1,18 +1,14 @@
 const express = require("express");
 
+const ctrl = require("../../controllers/ctrlItems");
+
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
-  res.json({ message: "template message" });
-});
+router.get("/", ctrl.getItems);
 
-router.get("/:itemId", async (req, res, next) => {
-  res.json({ message: "template message" });
-});
+router.get("/:itemId", ctrl.getItem);
 
-router.post("/", async (req, res, next) => {
-  res.json({ message: "template message" });
-});
+router.post("/", ctrl.createItem);
 
 router.delete("/:itemId", async (req, res, next) => {
   res.json({ message: "template message" });

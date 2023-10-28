@@ -73,7 +73,7 @@ async function deleteItem(req, res, next) {
   }
 
   await modelItems.findByIdAndRemove(itemId);
-  return res.status(200).json({ message: "Item deleted" });
+  return res.status(200).json({ message: "Item was deleted" });
 }
 
 module.exports = {

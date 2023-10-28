@@ -26,7 +26,7 @@ const itemSchema = new Schema(
     category: {
       type: String,
       required: [true, "Category is required"],
-      enum: typeCategory, // NoN | футболки | кофти | леггінси | костюми
+      enum: typeCategory, // NoN | футболки | кофти | леггінси |
       default: typeCategory[0],
     },
     size: {
@@ -66,7 +66,7 @@ const schemaAddItem = Joi.object({
   size: Joi.string()
     .valid(...typeSize)
     .required(),
-  description: Joi.string().max(350).required(),
+  description: Joi.string().max(350),
   status: Joi.boolean().required(),
   // rating: Joi.string()
   //   .valid(...typeRating)

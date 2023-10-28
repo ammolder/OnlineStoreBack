@@ -57,7 +57,7 @@ itemSchema.post("save", handleMongooseError);
 // * Validation start < end
 const schemaAddItem = Joi.object({
   title: Joi.string().max(250).required(),
-  price: Joi.number().max(5).required(),
+  price: Joi.number().max(10000).required(),
   sex: Joi.string()
     .valid(...typeSex)
     .required(),

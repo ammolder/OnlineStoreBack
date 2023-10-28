@@ -26,7 +26,7 @@ const itemSchema = new Schema(
     category: {
       type: String,
       required: [true, "Category is required"],
-      enum: typeCategory, // NoN | футболки | кофти | леггінси | костюми
+      enum: typeCategory, // NoN | футболки | кофти | леггінси |
       default: typeCategory[0],
     },
     size: {
@@ -57,7 +57,7 @@ itemSchema.post("save", handleMongooseError);
 // * Validation start < end
 const schemaAddItem = Joi.object({
   title: Joi.string().max(250).required(),
-  price: Joi.number().max(5).required(),
+  price: Joi.number().max(10000).required(),
   sex: Joi.string()
     .valid(...typeSex)
     .required(),
@@ -66,7 +66,7 @@ const schemaAddItem = Joi.object({
   size: Joi.string()
     .valid(...typeSize)
     .required(),
-  description: Joi.string().max(350).required(),
+  description: Joi.string().max(350),
   status: Joi.boolean().required(),
   // rating: Joi.string()
   //   .valid(...typeRating)

@@ -14,7 +14,7 @@ async function getItemById(req, res, next) {
   const item = await modelItems.findById(itemId);
 
   if (!item) {
-    return next(HttpError(404, "Not foundg"));
+    return next(HttpError(404));
   }
   return res.json(item);
 }
@@ -57,7 +57,7 @@ async function changeStatus(req, res, next) {
   const updateItem = await modelItems.findByIdAndUpdate(itemId, { status });
 
   if (!updateItem) {
-    return next(HttpError(400, "missing fields"));
+    return next(HttpError(400));
   }
   const item = await modelItems.findById(itemId);
 
@@ -66,10 +66,13 @@ async function changeStatus(req, res, next) {
 
 async function deleteItem(req, res, next) {
   const { itemId } = req.params;
+  console.log("req.params :", req.params);
+  console.log("itemId :", itemId);
   const item = await modelItems.findById(itemId);
+  console.log("item :", item);
 
   if (!item) {
-    return next(HttpError(404, "Not found"));
+    return next(HttpError(404));
   }
 
   await modelItems.findByIdAndRemove(itemId);

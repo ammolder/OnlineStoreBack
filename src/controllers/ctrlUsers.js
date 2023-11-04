@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const gravatar = require("gravatar");
+
 const { v4 } = require("uuid");
 const { modelUser } = require("../models/user");
 const usersServices = require("../service/users");
@@ -18,14 +18,14 @@ const { schemas } = require("../models/user");
 const { FRONTEND_URL, ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = process.env; //For google autanticate
 
 const currentUser = async (req, res, next) => {
-  const { name, email, phone, birthday } = req.user;
+  const { name, email, phone, birthday, avatarUrl } = req.user;
 
   res.status(200).json({
-    // avatarUrl,
     name,
     email,
     phone,
     birthday,
+    avatarUrl,
   });
 };
 
@@ -77,11 +77,11 @@ const updateUser = async (req, res, next) => {
     throw HttpError(409, "Email is not compare");
   }
 
-  // const avatarUrl = req.file?.path;
+  const avatarUrl = req.file?.path;
 
   const updatedFields = {
     ...req.body,
-    // ...(avatarUrl && { avatarUrl: avatarUrl }), // add avatarUrl if it's defined
+    ...(avatarUrl && { avatarUrl: avatarUrl }), // add avatarUrl if it's defined
   };
 
   const user = await usersServices.updateUserById(_id, updatedFields, false);
@@ -147,19 +147,15 @@ const refresh = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
-  console.log("newPassword :", newPassword);
-  console.log("token :", token);
 
   if (!token || !newPassword) {
     throw HttpError(400, "Token and new password are required");
   }
-
   const decoded = jwt.verify(token, ACCESS_SECRET_KEY);
   const user = await usersServices.updateUserById({
     _id: decoded.id,
     resetPasswordToken: token,
   });
-  console.log("user :", user);
 
   if (!user) {
     throw HttpError(400, "Token is invalid or has expired");
@@ -176,9 +172,7 @@ const resetPassword = async (req, res) => {
 const forgotPassword = async (req, res) => {};
 
 const logout = async (req, res) => {
-  console.log("req.user :", req.user);
   const { _id } = req.user;
-
   await usersServices.updateUserById(_id, {
     accessToken: "",
     refreshToken: "",

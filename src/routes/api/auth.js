@@ -2,7 +2,7 @@ const express = require("express");
 const {
   validateBody,
   auth,
-  //   uploadCloud,
+  uploadCloud,
   //   passport,
 } = require("../../middlewares/index");
 
@@ -21,7 +21,7 @@ router.post("/reset-password", ctrl.resetPassword);
 router.patch(
   "/update",
   auth,
-  // uploadCloud.single("avatar"),
+  uploadCloud.single("photo"),
   validateBody(schemas.updateUserSchema),
   ctrl.updateUser
 );

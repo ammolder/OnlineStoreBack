@@ -5,7 +5,6 @@ const Joi = require("joi");
 const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const dateRegexp =
   /^(?:(?:0[1-9]|[12][0-9]|3[01])\/(?:0[1-9]|1[0-2])\/(?:19|20)\d\d)?$/;
-// const phoneRegexp = /^38\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}$/;
 const phoneRegexp = /^[\+\d]?(?:[\d-.\s()]*)$/;
 
 const userSchema = new Schema(

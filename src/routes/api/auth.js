@@ -33,7 +33,7 @@ router.patch(
 // router.get(
 //   "/google/callback",
 //   passport.authenticate("google", { session: false }),
-//   ctrl.googleAuth
+//   ctrl.authGoogle
 // );
 
 module.exports = router;

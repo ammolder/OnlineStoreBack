@@ -6,15 +6,15 @@ const {
   uploadCloud,
   //   passport,
 } = require("../../middlewares");
-const { schemas } = require("../../models/user");
 const ctrl = require("../../controllers/ctrlUsers");
+const { registerVldtr, loginVldtr, refreshVldtr, updateUserVldtr } = require("../../validators/userVldtr");
 
 const router = express.Router();
 
 router.get("/current", auth, ctrl.currentUser);
-router.post("/register", validateBody(schemas.registerSchema), ctrl.register);
-router.post("/login", validateBody(schemas.loginSchema), ctrl.login);
-router.post("/refresh", validateBody(schemas.refreshSchema), ctrl.refresh);
+router.post("/register", validateBody(registerVldtr), ctrl.register);
+router.post("/login", validateBody(loginVldtr), ctrl.login);
+router.post("/refresh", validateBody(refreshVldtr), ctrl.refresh);
 router.post("/logout", auth, ctrl.logout);
 router.post("/forgot", ctrl.forgotPassword);
 router.post("/reset-password", ctrl.resetPassword);
@@ -22,7 +22,7 @@ router.patch(
   "/update",
   auth,
   uploadCloud.single("photo"),
-  validateBody(schemas.updateUserSchema),
+  validateBody(updateUserVldtr),
   ctrl.updateUser
 );
 

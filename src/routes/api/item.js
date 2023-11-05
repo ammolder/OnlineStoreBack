@@ -9,7 +9,7 @@ const {
 	deleteItem,
 } = require("../../controllers/ctrlItems");
 const { validateBody, isValidId, auth } = require("../../middlewares");
-const { schemas } = require("../../models/item");
+const {addItemVldtr, changeStatusItemVldtr} = require("../../validators/itemVldtr");
 
 const router = express.Router();
 
@@ -17,19 +17,19 @@ router.get("/", getAllItems);
 
 router.get("/:itemId", isValidId, getItemById);
 
-router.post("/", auth, validateBody(schemas.schemaAddItem), createItem);
+router.post("/", auth, validateBody(addItemVldtr), createItem);
 router.put(
 	"/:itemId",
 	auth,
 	isValidId,
-	validateBody(schemas.schemaAddItem),
+	validateBody(addItemVldtr),
 	updateItem,
 );
 router.patch(
 	"/:itemId/status",
 	auth,
 	isValidId,
-	validateBody(schemas.schemaChangeStatusItem),
+	validateBody(changeStatusItemVldtr),
 	changeStatus,
 );
 

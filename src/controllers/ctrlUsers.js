@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
 const { v4 } = require("uuid");
+
 const { modelUser } = require("../models/user");
 const usersServices = require("../service/users");
-
 const {
   HttpError,
   createPairToken,

@@ -1,32 +1,38 @@
 const express = require("express");
 
-const ctrl = require("../../controllers/ctrlItems");
-
-const { validateBody, isValidId, auth } = require("../../middlewares/index");
+const {
+	getAllItems,
+	getItemById,
+	updateItem,
+	changeStatus,
+	createItem,
+	deleteItem,
+} = require("../../controllers/ctrlItems");
+const { validateBody, isValidId, auth } = require("../../middlewares");
 const { schemas } = require("../../models/item");
 
 const router = express.Router();
 
-router.get("/", ctrl.getAllItems);
+router.get("/", getAllItems);
 
-router.get("/:itemId", isValidId, ctrl.getItemById);
+router.get("/:itemId", isValidId, getItemById);
 
-router.post("/", auth, validateBody(schemas.schemaAddItem), ctrl.createItem);
+router.post("/", auth, validateBody(schemas.schemaAddItem), createItem);
 router.put(
-  "/:itemId",
-  auth,
-  isValidId,
-  validateBody(schemas.schemaAddItem),
-  ctrl.updateItem
+	"/:itemId",
+	auth,
+	isValidId,
+	validateBody(schemas.schemaAddItem),
+	updateItem,
 );
 router.patch(
-  "/:itemId/status",
-  auth,
-  isValidId,
-  validateBody(schemas.schemaChangeStatusItem),
-  ctrl.changeStatus
+	"/:itemId/status",
+	auth,
+	isValidId,
+	validateBody(schemas.schemaChangeStatusItem),
+	changeStatus,
 );
 
-router.delete("/:itemId", auth, isValidId, ctrl.deleteItem);
+router.delete("/:itemId", auth, isValidId, deleteItem);
 
 module.exports = router;

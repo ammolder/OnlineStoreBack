@@ -1,11 +1,11 @@
 const express = require("express");
+
 const {
   validateBody,
   auth,
   uploadCloud,
   //   passport,
-} = require("../../middlewares/index");
-
+} = require("../../middlewares");
 const { schemas } = require("../../models/user");
 const ctrl = require("../../controllers/ctrlUsers");
 

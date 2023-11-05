@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../helpers/index");
 const Joi = require("joi");
+
+const { handleMongooseError } = require("../helpers");
 
 const typeSex = ["NoN", "чоловічий", "жіночий", "дитячий"];
 const typeCategory = ["NoN", "футболки", "кофти", "леггінси", "костюми"];

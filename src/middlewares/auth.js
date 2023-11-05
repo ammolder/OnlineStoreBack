@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const { HttpError, getPayloadAccessToken } = require("../helpers");
 const { modelUser } = require("../models/user");
 

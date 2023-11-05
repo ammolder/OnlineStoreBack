@@ -1,12 +1,7 @@
 const { Schema, model } = require("mongoose");
-const Joi = require("joi");
 
 const { handleMongooseError } = require("../helpers");
-
-const typeSex = ["NoN", "чоловічий", "жіночий", "дитячий"];
-const typeCategory = ["NoN", "футболки", "кофти", "леггінси", "костюми"];
-const typeSize = ["NoN", "XS", "S", "M", "L", "XL", "XXL"];
-// const typeRating = ["1", "2", "3", "4", "5"];
+const {typeSex, typeCategory, typeSize} = require("../constants/constantsItem");
 
 const itemSchema = new Schema(
   {
@@ -54,57 +49,6 @@ const itemSchema = new Schema(
 
 itemSchema.post("save", handleMongooseError);
 
-// * JOI
-// * Validation start < end
-const schemaAddItem = Joi.object({
-  title: Joi.string().max(250).required(),
-  price: Joi.number().max(10000).required(),
-  sex: Joi.string()
-    .valid(...typeSex)
-    .required(),
-  category: Joi.string().valid(...typeCategory),
-  // .required(),
-  size: Joi.string()
-    .valid(...typeSize)
-    .required(),
-  description: Joi.string().max(350),
-  status: Joi.boolean().required(),
-  // rating: Joi.string()
-  //   .valid(...typeRating)
-  //   .required(),
-});
-
-const schemaChangeSexItem = Joi.object({
-  sex: Joi.string()
-    .valid(...typeSex)
-    .required(),
-});
-const schemaChangeCategoryItem = Joi.object({
-  category: Joi.string().valid(...typeCategory),
-  // .required(),
-});
-const schemaChangeSizeItem = Joi.object({
-  size: Joi.string()
-    .valid(...typeSize)
-    .required(),
-});
-const schemaChangeStatusItem = Joi.object({
-  status: Joi.boolean().required(),
-});
-// const schemaChangeRatingItem = Joi.object({
-//   rating: Joi.string()
-//     .valid(...typeRating)
-//     .required(),
-// });
-
-const schemas = {
-  schemaAddItem,
-  schemaChangeSexItem,
-  schemaChangeCategoryItem,
-  schemaChangeSizeItem,
-  schemaChangeStatusItem,
-  // schemaChangeRatingItem,
-};
 const modelItems = model("items", itemSchema);
 
-module.exports = { modelItems, schemas };
+module.exports = { modelItems };

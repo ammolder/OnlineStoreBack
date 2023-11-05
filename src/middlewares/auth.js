@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
     const { id } = getPayloadAccessToken(token);
     const user = await modelUser.findById(id);
     if (!user || !user.accessToken || user.accessToken !== token) {
-      next(HttpError(401, message));
+      next(HttpError(401));
     }
 
     req.user = user;

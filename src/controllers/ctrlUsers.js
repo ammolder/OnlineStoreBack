@@ -1,21 +1,18 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
 const { v4 } = require("uuid");
+
 const { modelUser } = require("../models/user");
 const usersServices = require("../service/users");
-
 const {
   HttpError,
   createPairToken,
   getPayloadRefreshToken,
   sendMail,
 } = require("../helpers");
-
 const { templateMailForgotPassword } = require("../templates");
 const { schemas } = require("../models/user");
-
-const { FRONTEND_URL, ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = process.env; //For google autanticate
+const { ACCESS_SECRET_KEY } = require("../configs/mainConfigs");
 
 const currentUser = async (req, res, next) => {
   const { name, email, phone, birthday, avatarUrl } = req.user;

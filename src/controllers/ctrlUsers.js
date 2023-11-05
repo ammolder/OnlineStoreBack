@@ -10,11 +10,9 @@ const {
   getPayloadRefreshToken,
   sendMail,
 } = require("../helpers");
-
 const { templateMailForgotPassword } = require("../templates");
 const { schemas } = require("../models/user");
-
-const { FRONTEND_URL, ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = process.env; //For google autanticate
+const {GOOGLE_ACCESS_SECRET_KEY} = require("../configs/mainConfigs");
 
 const currentUser = async (req, res, next) => {
   const { name, email, phone, birthday, avatarUrl } = req.user;
@@ -150,7 +148,7 @@ const resetPassword = async (req, res) => {
   if (!token || !newPassword) {
     throw HttpError(400, "Token and new password are required");
   }
-  const decoded = jwt.verify(token, ACCESS_SECRET_KEY);
+  const decoded = jwt.verify(token, GOOGLE_ACCESS_SECRET_KEY);
   const user = await usersServices.updateUserById({
     _id: decoded.id,
     resetPasswordToken: token,

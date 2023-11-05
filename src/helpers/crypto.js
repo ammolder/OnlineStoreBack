@@ -4,7 +4,7 @@ const {
   accessExpiresToken,
   refreshExpiresToken,
 } = require("../constants/constantsToken");
-const { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = process.env;
+const {ACCESS_SECRET_KEY, REFRESH_SECRET_KEY} = require("../configs/mainConfigs");
 
 const createPairToken = (payload) => {
   const accessToken = jwt.sign(payload, ACCESS_SECRET_KEY, {

@@ -78,7 +78,7 @@ const updateUser = async (req, res, next) => {
 
   const updatedFields = {
     ...req.body,
-    ...(avatarUrl && { avatarUrl: avatarUrl }), // add avatarUrl if it's defined
+    ...(avatarUrl && { avatarUrl }), // add avatarUrl if it's defined
   };
 
   const user = await usersServices.updateUserById(_id, updatedFields, false);
@@ -177,7 +177,7 @@ const logout = async (req, res) => {
 
   res.status(204).json("Successful logout");
 };
-//forgotPassword
+// forgotPassword
 module.exports = {
   currentUser,
   register,

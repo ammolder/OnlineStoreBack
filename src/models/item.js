@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const { handleMongooseError } = require("../helpers");
-const {typeSex, typeCategory, typeSize} = require("../constants/constantsItem");
+const { typeSex, typeCategory, typeSize } = require("../constants/constantsItem");
 
 const itemSchema = new Schema(
   {
@@ -44,7 +44,7 @@ const itemSchema = new Schema(
       default: true,
     },
   },
-  { versionKey: false }
+  { versionKey: false },
 );
 
 itemSchema.post("save", handleMongooseError);

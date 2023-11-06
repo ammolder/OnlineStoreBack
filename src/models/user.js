@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const { handleMongooseError } = require("../helpers");
-const {emailRegexp} = require("../constants/constantsRegexp");
+const { emailRegexp } = require("../constants/constantsRegexp");
 
 const userSchema = new Schema(
   {
@@ -45,7 +45,7 @@ const userSchema = new Schema(
     },
   },
   { versionKey: false },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.post("save", handleMongooseError);

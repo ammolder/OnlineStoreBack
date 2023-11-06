@@ -23,7 +23,7 @@ router.patch(
   auth,
   uploadCloud.single("photo"),
   validateBody(updateUserVldtr),
-  ctrl.updateUser
+  ctrl.updateUser,
 );
 
 // router.get(

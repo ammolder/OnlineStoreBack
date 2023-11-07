@@ -43,6 +43,19 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
+    address: {
+      type: String,
+      default: null,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+    },
+    // "facebook":""
     resetPasswordToken: {
       type: String,
       default: null,

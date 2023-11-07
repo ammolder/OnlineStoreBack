@@ -3,18 +3,15 @@ const bcrypt = require("bcrypt");
 const { v4 } = require("uuid");
 
 const usersServices = require("../service/users");
-
 const {
   HttpError,
   createPairToken,
   getPayloadRefreshToken,
 } = require("../helpers");
 const { sendMail } = require("../middlewares/index");
-
 const { templateMailForgotPassword } = require("../templates");
 const { schemas } = require("../models/user");
-
-const { FRONTEND_URL, ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = process.env; //For google autanticate
+const { ACCESS_SECRET_KEY } = process.env
 
 const currentUser = async (req, res, next) => {
   const { name, email, phone, birthday, avatarUrl, verified } = req.user;
@@ -131,7 +128,7 @@ const updateUser = async (req, res, next) => {
 
   const updatedFields = {
     ...req.body,
-    ...(avatarUrl && { avatarUrl: avatarUrl }), // add avatarUrl if it's defined
+    ...(avatarUrl && { avatarUrl }), // add avatarUrl if it's defined
   };
 
   const user = await usersServices.updateUserById(_id, updatedFields, false);
@@ -230,7 +227,7 @@ const logout = async (req, res) => {
 
   res.status(204).json("Successful logout");
 };
-//forgotPassword
+// forgotPassword
 module.exports = {
   currentUser,
   register,

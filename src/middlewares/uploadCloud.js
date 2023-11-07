@@ -1,7 +1,7 @@
 const multer = require("multer");
-
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 const { CLOUDNERY_API_NAME, CLOUDNERY_API_KEY, CLOUDNERY_API_SECRET } =
   process.env;
 
@@ -12,7 +12,7 @@ cloudinary.config({
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary,
   params: {
     folder: "StoreAvatars",
     allowedFormats: ["jpg", "png", "jpeg"],

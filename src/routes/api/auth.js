@@ -1,13 +1,13 @@
 const express = require("express");
+
 const {
   validateBody,
   auth,
   uploadCloud,
   //   passport,
-} = require("../../middlewares/index");
-
-const { schemas } = require("../../models/user");
+} = require("../../middlewares");
 const ctrl = require("../../controllers/ctrlUsers");
+const { registerVldtr, loginVldtr, refreshVldtr, updateUserVldtr } = require("../../validators/userVldtr");
 
 const router = express.Router();
 
@@ -24,8 +24,8 @@ router.patch(
   "/update",
   auth,
   uploadCloud.single("photo"),
-  validateBody(schemas.updateUserSchema),
-  ctrl.updateUser
+  validateBody(updateUserVldtr),
+  ctrl.updateUser,
 );
 
 // router.get(

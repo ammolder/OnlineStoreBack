@@ -1,8 +1,8 @@
 const { HttpError } = require("../helpers");
 
-function validateBody(schema) {
+function validateBody(validator) {
   return (req, res, next) => {
-    const { error } = schema.validate(req.body);
+    const { error } = validator.validate(req.body);
 
     if (error) {
       return next(HttpError(400, error.message));

@@ -1,5 +1,4 @@
-const { HttpError } = require("../helpers/index");
-
+const { HttpError } = require("../helpers");
 const { modelItems } = require("../models/item");
 
 async function getAllItems(req, res, next) {

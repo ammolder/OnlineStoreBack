@@ -9,6 +9,7 @@ const {
   createPairToken,
   getPayloadRefreshToken,
   sendMail,
+  hashPassword,
 } = require("../helpers");
 const { templateMailForgotPassword } = require("../templates");
 const { schemas } = require("../models/user");
@@ -27,42 +28,39 @@ const currentUser = async (req, res, next) => {
 };
 
 const register = async (req, res, next) => {
-  const { email, password } = req.body;
+  try {
+    const { password } = req.body;
+    const hashedPassword = await hashPassword(password);
 
-  const user = await usersServices.findUser({ email }, false);
+    const newUser = await usersServices.createUser({
+      ...req.body,
+      password: hashedPassword,
+    });
 
-  if (user) {
-    throw HttpError(409, "Email already in use");
+    const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
+
+    await usersServices.updateUserById(newUser._id, {
+      accessToken,
+      refreshToken,
+    });
+
+    const {
+      password: _password,
+      token: _token,
+      accessToken: _accessToken,
+      refreshToken: _refreshToken,
+      verificationToken,
+      ...updatedUser
+    } = newUser.toObject();
+
+    res.json({
+      accessToken,
+      refreshToken,
+      user: updatedUser,
+    });
+  } catch (e) {
+    next(e);
   }
-
-  const hashPassword = await bcrypt.hash(password, 10);
-
-  const newUser = await usersServices.createUser({
-    ...req.body,
-    password: hashPassword,
-  });
-
-  const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
-
-  await usersServices.updateUserById(newUser._id, {
-    accessToken,
-    refreshToken,
-  });
-
-  const {
-    password: _password,
-    token: _token,
-    accessToken: _accessToken,
-    refreshToken: _refreshToken,
-    verificationToken,
-    ...updatedUser
-  } = newUser.toObject();
-
-  res.json({
-    accessToken,
-    refreshToken,
-    user: updatedUser,
-  });
 };
 
 const updateUser = async (req, res, next) => {

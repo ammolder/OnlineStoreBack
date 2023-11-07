@@ -1,5 +1,6 @@
 const { HttpError, getPayloadAccessToken } = require("../helpers");
 const { modelUser } = require("../models/user");
+const usersServices = require("../service/users");
 
 const auth = async (req, res, next) => {
   const { authorization = "" } = req.headers;
@@ -22,4 +23,19 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+const isEmailUnique = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await usersServices.findUser({ email }, false);
+
+    if (user) {
+      return next(HttpError(409, "Email already in use"));
+    }
+
+    next();
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { auth, isEmailUnique };

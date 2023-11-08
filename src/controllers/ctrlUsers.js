@@ -2,21 +2,19 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { v4 } = require("uuid");
 
-const { modelUser } = require("../models/user");
 const usersServices = require("../service/users");
 const {
   HttpError,
   createPairToken,
   getPayloadRefreshToken,
-  sendMail,
-  hashPassword,
 } = require("../helpers");
+const { sendMail } = require("../middlewares/index");
 const { templateMailForgotPassword } = require("../templates");
 const { schemas } = require("../models/user");
-const { ACCESS_SECRET_KEY } = require("../configs/mainConfigs");
+const { ACCESS_SECRET_KEY } = process.env
 
 const currentUser = async (req, res, next) => {
-  const { name, email, phone, birthday, avatarUrl } = req.user;
+  const { name, email, phone, birthday, avatarUrl, verified } = req.user;
 
   res.status(200).json({
     name,
@@ -24,43 +22,97 @@ const currentUser = async (req, res, next) => {
     phone,
     birthday,
     avatarUrl,
+    verified,
   });
 };
 
 const register = async (req, res, next) => {
-  try {
-    const { password } = req.body;
-    const hashedPassword = await hashPassword(password);
+  const { email, password } = req.body;
+  const verificationToken = v4();
 
-    const newUser = await usersServices.createUser({
-      ...req.body,
-      password: hashedPassword,
-    });
+  const user = await usersServices.findUser({ email }, false);
 
-    const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
-
-    await usersServices.updateUserById(newUser._id, {
-      accessToken,
-      refreshToken,
-    });
-
-    const {
-      password: _password,
-      token: _token,
-      accessToken: _accessToken,
-      refreshToken: _refreshToken,
-      verificationToken,
-      ...updatedUser
-    } = newUser.toObject();
-
-    res.json({
-      accessToken,
-      refreshToken,
-      user: updatedUser,
-    });
-  } catch (e) {
-    next(e);
+  if (user) {
+    throw HttpError(409, "Email already in use");
   }
+
+  const hashPassword = await bcrypt.hash(password, 10);
+
+  const newUser = await usersServices.createUser({
+    ...req.body,
+    password: hashPassword,
+    verificationToken: verificationToken,
+  });
+
+  const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
+
+  await usersServices.updateUserById(newUser._id, {
+    accessToken,
+    refreshToken,
+  });
+
+  const {
+    password: _password,
+    token: _token,
+    accessToken: _accessToken,
+    refreshToken: _refreshToken,
+    verificationToken: _verificationToken,
+    ...updatedUser
+  } = newUser.toObject();
+  console.log("newUser :", newUser);
+
+  await sendMail({
+    to: email,
+    subject: "Please confirm your email",
+    html: `<a href='http://localhost:3000/api/user/verify/${verificationToken}'>Confirm your email</a>`,
+  });
+  console.log("verificationToken :", verificationToken);
+
+  res.json({
+    accessToken,
+    refreshToken,
+    user: updatedUser,
+  });
+};
+
+const verifyEmail = async (req, res, next) => {
+  const { token } = req.params;
+  const user = await usersServices.findUser({ verificationToken: token });
+
+  if (!user) {
+    throw HttpError(404, "Not found");
+  }
+
+  await usersServices.updateUserById(user._id, {
+    verified: true,
+    verificationToken: null,
+  });
+  console.log("token :", token);
+
+  return res.status(200).json("Verification successful");
+};
+
+const sendVerify = async (req, res, next) => {
+  const { email } = req.body;
+  const user = await usersServices.findUser({ email });
+  const verificationToken = user.verificationToken;
+
+  if (!user) {
+    throw HttpError(400, "missing required field email");
+  }
+
+  if (user.verified) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+
+  await sendMail({
+    to: email,
+    subject: "Please confirm your email",
+    html: `<a href='http://localhost:3000/api/user/verify/${verificationToken}'>Confirm your email</a>`,
+  });
+  console.log("verified :", user.verified);
+
+  return res.status(200).json("Verification email sent");
 };
 
 const updateUser = async (req, res, next) => {
@@ -179,6 +231,8 @@ const logout = async (req, res) => {
 module.exports = {
   currentUser,
   register,
+  sendVerify,
+  verifyEmail,
   updateUser,
   login,
   refresh,

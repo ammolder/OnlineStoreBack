@@ -2,17 +2,24 @@ const express = require("express");
 
 const {
   validateBody,
+  auth,
   uploadCloud,
   //   passport,
 } = require("../../middlewares");
-const { auth, isEmailUnique } = require("../../middlewares/auth");
 const ctrl = require("../../controllers/ctrlUsers");
-const { registerVldtr, loginVldtr, refreshVldtr, updateUserVldtr } = require("../../validators/userVldtr");
+const {
+  registerVldtr,
+  loginVldtr,
+  refreshVldtr,
+  updateUserVldtr,
+} = require("../../validators/userVldtr");
 
 const router = express.Router();
 
 router.get("/current", auth, ctrl.currentUser);
-router.post("/register", validateBody(registerVldtr), isEmailUnique, ctrl.register);
+router.post("/register", validateBody(registerVldtr), ctrl.register);
+router.get("/verify/:token", ctrl.verifyEmail);
+router.post("/verify", ctrl.sendVerify);
 router.post("/login", validateBody(loginVldtr), ctrl.login);
 router.post("/refresh", validateBody(refreshVldtr), ctrl.refresh);
 router.post("/logout", auth, ctrl.logout);
@@ -23,7 +30,7 @@ router.patch(
   auth,
   uploadCloud.single("photo"),
   validateBody(updateUserVldtr),
-  ctrl.updateUser,
+  ctrl.updateUser
 );
 
 // router.get(

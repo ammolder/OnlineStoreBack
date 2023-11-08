@@ -1,5 +1,3 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 const { v4 } = require("uuid");
 
 const usersServices = require("../service/users");
@@ -7,9 +5,9 @@ const {
   HttpError,
   createPairToken,
   hashPassword,
+  getPayloadActionToken,
 } = require("../helpers");
 const { sendMail } = require("../middlewares");
-const { ACCESS_SECRET_KEY } = process.env;
 
 const currentUser = async (req, res) => {
   const { name, email, phone, birthday, avatarUrl, verified } = req.user;
@@ -181,28 +179,24 @@ const refresh = async (req, res, next) => {
   }
 };
 
-const resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
+const resetPassword = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    const { id } = getPayloadActionToken(token);
 
-  if (!token || !newPassword) {
-    throw HttpError(400, "Token and new password are required");
+    const user = await usersServices.updateUserById(id, {
+      resetPasswordToken: token,
+    });
+
+    user.password = await hashPassword(newPassword);
+    user.resetPasswordToken = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successful." });
+  } catch (e) {
+    next(e);
   }
-  const decoded = jwt.verify(token, ACCESS_SECRET_KEY);
-  const user = await usersServices.updateUserById({
-    _id: decoded.id,
-    resetPasswordToken: token,
-  });
-
-  if (!user) {
-    throw HttpError(400, "Token is invalid or has expired");
-  }
-
-  user.password = await bcrypt.hash(newPassword, 10);
-  user.resetPasswordToken = undefined;
-
-  await user.save();
-
-  res.status(200).json({ message: "Password reset successful." });
 };
 
 const forgotPassword = async (req, res) => {};

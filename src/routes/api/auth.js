@@ -15,6 +15,7 @@ const {
   loginVldtr,
   refreshVldtr,
   updateUserVldtr,
+  resetPassVldtr,
 } = require("../../validators/userVldtr");
 
 const router = express.Router();
@@ -27,7 +28,7 @@ router.post("/login", validateBody(loginVldtr), isPasswordsSame, ctrl.login);
 router.post("/refresh", validateBody(refreshVldtr), checkRefreshToken, ctrl.refresh);
 router.post("/logout", checkAccessToken, ctrl.logout);
 router.post("/forgot", ctrl.forgotPassword);
-router.post("/reset-password", ctrl.resetPassword);
+router.post("/reset-password", validateBody(resetPassVldtr), ctrl.resetPassword);
 router.patch(
   "/update",
   checkAccessToken,

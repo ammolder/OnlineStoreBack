@@ -6,6 +6,7 @@ const {
   uploadCloud,
   isEmailUnique,
   checkRefreshToken,
+  isPasswordsSame,
   //   passport,
 } = require("../../middlewares");
 const ctrl = require("../../controllers/ctrlUsers");
@@ -22,7 +23,7 @@ router.get("/current", checkAccessToken, ctrl.currentUser);
 router.post("/register", validateBody(registerVldtr), isEmailUnique, ctrl.register);
 router.get("/verify/:token", ctrl.verifyEmail);
 router.post("/verify", ctrl.sendVerify);
-router.post("/login", validateBody(loginVldtr), ctrl.login);
+router.post("/login", validateBody(loginVldtr), isPasswordsSame, ctrl.login);
 router.post("/refresh", validateBody(refreshVldtr), checkRefreshToken, ctrl.refresh);
 router.post("/logout", checkAccessToken, ctrl.logout);
 router.post("/forgot", ctrl.forgotPassword);

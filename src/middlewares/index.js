@@ -5,5 +5,15 @@ const validateBody = require("./validateBody");
 const isValidId = require("./isValidId");
 const uploadCloud = require("./uploadCloud");
 const isEmailUnique = require("./isEmailUnique");
+const isPasswordsSame = require("./isPasswordsSame");
 
-module.exports = { checkAccessToken, checkRefreshToken, sendMail, validateBody, isValidId, uploadCloud, isEmailUnique };
+module.exports = {
+  checkAccessToken,
+  checkRefreshToken,
+  sendMail,
+  validateBody,
+  isValidId,
+  uploadCloud,
+  isEmailUnique,
+  isPasswordsSame,
+};

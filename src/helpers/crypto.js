@@ -37,9 +37,12 @@ const getPayloadAccessToken = (token) => {
 
 const hashPassword = (password) => bcrypt.hash(password, 10);
 
+const comparePasswords = (pass, hashPass) => bcrypt.compare(pass, hashPass);
+
 module.exports = {
   createPairToken,
   getPayloadRefreshToken,
   getPayloadAccessToken,
   hashPassword,
+  comparePasswords,
 };

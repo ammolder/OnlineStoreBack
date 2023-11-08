@@ -137,32 +137,31 @@ const updateUser = async (req, res, next) => {
   res.status(200).json({ message: "UserInfo updated", user: updatedUser });
 };
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await usersServices.findUser({ email });
-  const passwordCompare = await bcrypt.compare(password, user.password);
-  if (!passwordCompare) {
-    throw HttpError(401, "Email or password invalid");
+const login = async (req, res, next) => {
+  try {
+    const { user } = req;
+
+    const [accessToken, refreshToken] = createPairToken({ id: user._id });
+
+    await usersServices.updateUserById(user._id, { accessToken, refreshToken });
+
+    const {
+      password: _password,
+      token: _token,
+      verificationToken,
+      accessToken: _accessToken,
+      refreshToken: _refreshToken,
+      ...updatedUser
+    } = user.toObject();
+
+    res.json({
+      accessToken,
+      refreshToken,
+      user: updatedUser,
+    });
+  } catch (e) {
+    next(e);
   }
-
-  const [accessToken, refreshToken] = createPairToken({ id: user._id });
-
-  await usersServices.updateUserById(user._id, { accessToken, refreshToken });
-
-  const {
-    password: _password,
-    token: _token,
-    verificationToken,
-    accessToken: _accessToken,
-    refreshToken: _refreshToken,
-    ...updatedUser
-  } = user.toObject();
-
-  res.json({
-    accessToken,
-    refreshToken,
-    user: updatedUser,
-  });
 };
 
 const refresh = async (req, res, next) => {

@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const {
   accessExpiresToken,
@@ -25,8 +26,11 @@ const getPayloadAccessToken = (token) => {
   return jwt.verify(token, ACCESS_SECRET_KEY);
 };
 
+const hashPassword = (password) => bcrypt.hash(password, 10);
+
 module.exports = {
   createPairToken,
   getPayloadRefreshToken,
   getPayloadAccessToken,
+  hashPassword,
 };

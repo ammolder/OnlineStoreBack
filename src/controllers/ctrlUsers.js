@@ -7,8 +7,9 @@ const {
   HttpError,
   createPairToken,
   getPayloadRefreshToken,
+  hashPassword,
 } = require("../helpers");
-const { sendMail } = require("../middlewares/index");
+const { sendMail } = require("../middlewares");
 const { templateMailForgotPassword } = require("../templates");
 const { schemas } = require("../models/user");
 const { ACCESS_SECRET_KEY } = process.env
@@ -27,52 +28,48 @@ const currentUser = async (req, res, next) => {
 };
 
 const register = async (req, res, next) => {
-  const { email, password } = req.body;
-  const verificationToken = v4();
+  try {
+    const { email, password } = req.body;
+    const verificationToken = v4();
 
-  const user = await usersServices.findUser({ email }, false);
+    const hashedPassword = await hashPassword(password);
 
-  if (user) {
-    throw HttpError(409, "Email already in use");
+    const newUser = await usersServices.createUser({
+      ...req.body,
+      password: hashedPassword,
+      verificationToken: verificationToken,
+    });
+
+    const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
+
+    await usersServices.updateUserById(newUser._id, {
+      accessToken,
+      refreshToken,
+    });
+
+    const {
+      password: _password,
+      token: _token,
+      accessToken: _accessToken,
+      refreshToken: _refreshToken,
+      verificationToken: _verificationToken,
+      ...updatedUser
+    } = newUser.toObject();
+
+    await sendMail({
+      to: email,
+      subject: "Please confirm your email",
+      html: `<a href='http://localhost:3000/api/user/verify/${verificationToken}'>Confirm your email</a>`,
+    });
+
+    res.json({
+      accessToken,
+      refreshToken,
+      user: updatedUser,
+  });
+  } catch (e) {
+    next(e);
   }
-
-  const hashPassword = await bcrypt.hash(password, 10);
-
-  const newUser = await usersServices.createUser({
-    ...req.body,
-    password: hashPassword,
-    verificationToken: verificationToken,
-  });
-
-  const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
-
-  await usersServices.updateUserById(newUser._id, {
-    accessToken,
-    refreshToken,
-  });
-
-  const {
-    password: _password,
-    token: _token,
-    accessToken: _accessToken,
-    refreshToken: _refreshToken,
-    verificationToken: _verificationToken,
-    ...updatedUser
-  } = newUser.toObject();
-  console.log("newUser :", newUser);
-
-  await sendMail({
-    to: email,
-    subject: "Please confirm your email",
-    html: `<a href='http://localhost:3000/api/user/verify/${verificationToken}'>Confirm your email</a>`,
-  });
-  console.log("verificationToken :", verificationToken);
-
-  res.json({
-    accessToken,
-    refreshToken,
-    user: updatedUser,
-  });
 };
 
 const verifyEmail = async (req, res, next) => {

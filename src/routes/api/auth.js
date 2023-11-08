@@ -4,6 +4,7 @@ const {
   validateBody,
   auth,
   uploadCloud,
+  isEmailUnique,
   //   passport,
 } = require("../../middlewares");
 const ctrl = require("../../controllers/ctrlUsers");
@@ -17,7 +18,7 @@ const {
 const router = express.Router();
 
 router.get("/current", auth, ctrl.currentUser);
-router.post("/register", validateBody(registerVldtr), ctrl.register);
+router.post("/register", validateBody(registerVldtr), isEmailUnique, ctrl.register);
 router.get("/verify/:token", ctrl.verifyEmail);
 router.post("/verify", ctrl.sendVerify);
 router.post("/login", validateBody(loginVldtr), ctrl.login);

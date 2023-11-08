@@ -24,11 +24,13 @@ class UsersServices {
     return updateUser;
   };
 
-  findUser = async (data, standartError = true) => {
+  findUser = async (data, standardError = true) => {
     const user = await modelUser.findOne(data);
-    if (standartError && !user) {
+
+    if (standardError && !user) {
       throw HttpError(401, "Email or password invalid");
     }
+
     return user;
   };
 

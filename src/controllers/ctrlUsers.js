@@ -12,9 +12,9 @@ const {
 const { sendMail } = require("../middlewares");
 const { templateMailForgotPassword } = require("../templates");
 const { schemas } = require("../models/user");
-const { ACCESS_SECRET_KEY } = process.env
+const { ACCESS_SECRET_KEY } = process.env;
 
-const currentUser = async (req, res, next) => {
+const currentUser = async (req, res) => {
   const { name, email, phone, birthday, avatarUrl, verified } = req.user;
 
   res.status(200).json({
@@ -37,7 +37,7 @@ const register = async (req, res, next) => {
     const newUser = await usersServices.createUser({
       ...req.body,
       password: hashedPassword,
-      verificationToken: verificationToken,
+      verificationToken,
     });
 
     const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
@@ -66,7 +66,7 @@ const register = async (req, res, next) => {
       accessToken,
       refreshToken,
       user: updatedUser,
-  });
+    });
   } catch (e) {
     next(e);
   }

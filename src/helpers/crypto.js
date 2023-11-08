@@ -5,6 +5,7 @@ const {
   accessExpiresToken,
   refreshExpiresToken,
 } = require("../constants/constantsToken");
+const HttpError = require("./HttpError");
 const { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = process.env;
 
 const createPairToken = (payload) => {
@@ -23,7 +24,11 @@ const getPayloadRefreshToken = (token) => {
 };
 
 const getPayloadAccessToken = (token) => {
-  return jwt.verify(token, ACCESS_SECRET_KEY);
+  try {
+    return jwt.verify(token, ACCESS_SECRET_KEY);
+  } catch {
+    throw HttpError(400, "Access token not valid");
+  }
 };
 
 const hashPassword = (password) => bcrypt.hash(password, 10);

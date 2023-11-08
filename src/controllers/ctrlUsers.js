@@ -6,12 +6,9 @@ const usersServices = require("../service/users");
 const {
   HttpError,
   createPairToken,
-  getPayloadRefreshToken,
   hashPassword,
 } = require("../helpers");
 const { sendMail } = require("../middlewares");
-const { templateMailForgotPassword } = require("../templates");
-const { schemas } = require("../models/user");
 const { ACCESS_SECRET_KEY } = process.env;
 
 const currentUser = async (req, res) => {
@@ -168,25 +165,21 @@ const login = async (req, res) => {
   });
 };
 
-const refresh = async (req, res) => {
-  const { refreshToken: token } = req.body;
+const refresh = async (req, res, next) => {
+  try {
+    const { refreshPayloadId, user } = req;
 
-  const { id } = getPayloadRefreshToken(token);
+    const [accessToken, refreshToken] = createPairToken({ id: refreshPayloadId });
 
-  const user = await usersServices.findUser({ refreshToken: token }, false);
+    await usersServices.updateUserById(user._id, {
+      accessToken,
+      refreshToken,
+    });
 
-  if (!user) {
-    throw HttpError(403, "Invalid refresh token");
+    res.json({ accessToken, refreshToken });
+  } catch (e) {
+    next(e);
   }
-
-  const [accessToken, refreshToken] = createPairToken({ id });
-
-  await usersServices.updateUserById(user._id, {
-    accessToken,
-    refreshToken,
-  });
-
-  res.json({ accessToken, refreshToken });
 };
 
 const resetPassword = async (req, res) => {

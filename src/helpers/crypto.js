@@ -20,7 +20,11 @@ const createPairToken = (payload) => {
 };
 
 const getPayloadRefreshToken = (token) => {
-  return jwt.verify(token, REFRESH_SECRET_KEY);
+  try {
+    return jwt.verify(token, REFRESH_SECRET_KEY);
+  } catch (e) {
+    throw HttpError(400, "Refresh token not valid");
+  }
 };
 
 const getPayloadAccessToken = (token) => {

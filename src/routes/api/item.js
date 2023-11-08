@@ -8,8 +8,7 @@ const {
   createItem,
   deleteItem,
 } = require("../../controllers/ctrlItems");
-const { validateBody, isValidId } = require("../../middlewares");
-const { auth } = require("../../middlewares/auth");
+const { validateBody, isValidId, auth } = require("../../middlewares");
 const { addItemVldtr, changeStatusItemVldtr } = require("../../validators/itemVldtr");
 
 const router = express.Router();

@@ -2,15 +2,7 @@ const { modelUser } = require("../models/user");
 const { HttpError } = require("../helpers");
 
 class UsersServices {
-  findUserById = async (id) => {
-    const user = await modelUser.findById(id);
-
-    if (!user) {
-      throw HttpError(401, "Email or password invalid");
-    }
-
-    return user;
-  };
+  findUserById = (id) => modelUser.findById(id);
 
   updateUserById = async (id, data, standartError = true) => {
     const updateUser = await modelUser.findByIdAndUpdate(id, data, {

@@ -6,15 +6,12 @@ const usersServices = require("../service/users");
 const {
   HttpError,
   createPairToken,
-  getPayloadRefreshToken,
   hashPassword,
 } = require("../helpers");
 const { sendMail } = require("../middlewares");
-const { templateMailForgotPassword } = require("../templates");
-const { schemas } = require("../models/user");
-const { ACCESS_SECRET_KEY } = process.env
+const { ACCESS_SECRET_KEY } = process.env;
 
-const currentUser = async (req, res, next) => {
+const currentUser = async (req, res) => {
   const { name, email, phone, birthday, avatarUrl, verified } = req.user;
 
   res.status(200).json({
@@ -37,7 +34,7 @@ const register = async (req, res, next) => {
     const newUser = await usersServices.createUser({
       ...req.body,
       password: hashedPassword,
-      verificationToken: verificationToken,
+      verificationToken,
     });
 
     const [accessToken, refreshToken] = createPairToken({ id: newUser._id });
@@ -66,7 +63,7 @@ const register = async (req, res, next) => {
       accessToken,
       refreshToken,
       user: updatedUser,
-  });
+    });
   } catch (e) {
     next(e);
   }
@@ -140,53 +137,48 @@ const updateUser = async (req, res, next) => {
   res.status(200).json({ message: "UserInfo updated", user: updatedUser });
 };
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await usersServices.findUser({ email });
-  const passwordCompare = await bcrypt.compare(password, user.password);
-  if (!passwordCompare) {
-    throw HttpError(401, "Email or password invalid");
+const login = async (req, res, next) => {
+  try {
+    const { user } = req;
+
+    const [accessToken, refreshToken] = createPairToken({ id: user._id });
+
+    await usersServices.updateUserById(user._id, { accessToken, refreshToken });
+
+    const {
+      password: _password,
+      token: _token,
+      verificationToken,
+      accessToken: _accessToken,
+      refreshToken: _refreshToken,
+      ...updatedUser
+    } = user.toObject();
+
+    res.json({
+      accessToken,
+      refreshToken,
+      user: updatedUser,
+    });
+  } catch (e) {
+    next(e);
   }
-
-  const [accessToken, refreshToken] = createPairToken({ id: user._id });
-
-  await usersServices.updateUserById(user._id, { accessToken, refreshToken });
-
-  const {
-    password: _password,
-    token: _token,
-    verificationToken,
-    accessToken: _accessToken,
-    refreshToken: _refreshToken,
-    ...updatedUser
-  } = user.toObject();
-
-  res.json({
-    accessToken,
-    refreshToken,
-    user: updatedUser,
-  });
 };
 
-const refresh = async (req, res) => {
-  const { refreshToken: token } = req.body;
+const refresh = async (req, res, next) => {
+  try {
+    const { refreshPayloadId, user } = req;
 
-  const { id } = getPayloadRefreshToken(token);
+    const [accessToken, refreshToken] = createPairToken({ id: refreshPayloadId });
 
-  const user = await usersServices.findUser({ refreshToken: token }, false);
+    await usersServices.updateUserById(user._id, {
+      accessToken,
+      refreshToken,
+    });
 
-  if (!user) {
-    throw HttpError(403, "Invalid refresh token");
+    res.json({ accessToken, refreshToken });
+  } catch (e) {
+    next(e);
   }
-
-  const [accessToken, refreshToken] = createPairToken({ id });
-
-  await usersServices.updateUserById(user._id, {
-    accessToken,
-    refreshToken,
-  });
-
-  res.json({ accessToken, refreshToken });
 };
 
 const resetPassword = async (req, res) => {

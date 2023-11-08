@@ -2,9 +2,11 @@ const express = require("express");
 
 const {
   validateBody,
-  auth,
+  checkAccessToken,
   uploadCloud,
   isEmailUnique,
+  checkRefreshToken,
+  isPasswordsSame,
   //   passport,
 } = require("../../middlewares");
 const ctrl = require("../../controllers/ctrlUsers");
@@ -17,21 +19,21 @@ const {
 
 const router = express.Router();
 
-router.get("/current", auth, ctrl.currentUser);
+router.get("/current", checkAccessToken, ctrl.currentUser);
 router.post("/register", validateBody(registerVldtr), isEmailUnique, ctrl.register);
 router.get("/verify/:token", ctrl.verifyEmail);
 router.post("/verify", ctrl.sendVerify);
-router.post("/login", validateBody(loginVldtr), ctrl.login);
-router.post("/refresh", validateBody(refreshVldtr), ctrl.refresh);
-router.post("/logout", auth, ctrl.logout);
+router.post("/login", validateBody(loginVldtr), isPasswordsSame, ctrl.login);
+router.post("/refresh", validateBody(refreshVldtr), checkRefreshToken, ctrl.refresh);
+router.post("/logout", checkAccessToken, ctrl.logout);
 router.post("/forgot", ctrl.forgotPassword);
 router.post("/reset-password", ctrl.resetPassword);
 router.patch(
   "/update",
-  auth,
+  checkAccessToken,
   uploadCloud.single("photo"),
   validateBody(updateUserVldtr),
-  ctrl.updateUser
+  ctrl.updateUser,
 );
 
 // router.get(

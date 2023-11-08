@@ -6,6 +6,7 @@ const {
   getPayloadRefreshToken,
   getPayloadAccessToken,
   hashPassword,
+  comparePasswords,
 } = require("./crypto");
 
 module.exports = {
@@ -16,4 +17,5 @@ module.exports = {
   getPayloadRefreshToken,
   getPayloadAccessToken,
   hashPassword,
+  comparePasswords,
 };

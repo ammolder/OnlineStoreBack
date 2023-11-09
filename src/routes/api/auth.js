@@ -8,6 +8,7 @@ const {
   checkRefreshToken,
   isPasswordsSame,
   isEmailNotVerified,
+  isVerifyTokenValid,
   //   passport,
 } = require("../../middlewares");
 const ctrl = require("../../controllers/ctrlUsers");
@@ -24,7 +25,7 @@ const router = express.Router();
 
 router.get("/current", checkAccessToken, ctrl.currentUser);
 router.post("/register", validateBody(registerVldtr), isEmailUnique, ctrl.register);
-router.get("/verify/:token", ctrl.verifyEmail);
+router.get("/verify/:token", isVerifyTokenValid, ctrl.verifyEmail);
 router.post("/verify", validateBody(sendVerifyVldtr), isEmailNotVerified, ctrl.sendVerify);
 router.post("/login", validateBody(loginVldtr), isPasswordsSame, ctrl.login);
 router.post("/refresh", validateBody(refreshVldtr), checkRefreshToken, ctrl.refresh);

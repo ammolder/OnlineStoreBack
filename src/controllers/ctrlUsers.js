@@ -68,20 +68,18 @@ const register = async (req, res, next) => {
 };
 
 const verifyEmail = async (req, res, next) => {
-  const { token } = req.params;
-  const user = await usersServices.findUser({ verificationToken: token });
+  try {
+    const { _id } = req.user;
 
-  if (!user) {
-    throw HttpError(404, "Not found");
+    await usersServices.updateUserById(_id, {
+      verified: true,
+      verificationToken: null,
+    });
+
+    return res.status(200).json("Verification successful");
+  } catch (e) {
+    next(e);
   }
-
-  await usersServices.updateUserById(user._id, {
-    verified: true,
-    verificationToken: null,
-  });
-  console.log("token :", token);
-
-  return res.status(200).json("Verification successful");
 };
 
 const sendVerify = async (req, res, next) => {

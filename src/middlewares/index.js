@@ -7,6 +7,7 @@ const uploadCloud = require("./uploadCloud");
 const isEmailUnique = require("./isEmailUnique");
 const isPasswordsSame = require("./isPasswordsSame");
 const isEmailNotVerified = require("./isEmailNotVerified");
+const isVerifyTokenValid = require("./isVerifyTokenValid");
 
 module.exports = {
   checkAccessToken,
@@ -18,4 +19,5 @@ module.exports = {
   isEmailUnique,
   isPasswordsSame,
   isEmailNotVerified,
+  isVerifyTokenValid,
 };

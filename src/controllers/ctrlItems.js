@@ -1,11 +1,18 @@
+const { itemsServices } = require("../service");
 const { HttpError } = require("../helpers");
 const { modelItems } = require("../models/item");
 
 async function getAllItems(req, res, next) {
-  const { page, limit } = req.query;
-  const skip = (page - 1) * limit;
-  const items = await modelItems.find().skip(skip).limit(limit);
-  return res.json(items);
+  try {
+    const { page, limit } = req.query;
+    const skip = (page - 1) * limit;
+
+    const items = await itemsServices.getByParams(page, limit, skip);
+
+    return res.json(items);
+  } catch (e) {
+    next(e);
+  }
 }
 
 async function getItemById(req, res, next) {

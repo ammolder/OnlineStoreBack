@@ -1,12 +1,16 @@
 const usersServices = require("../service/users");
-const { HttpError } = require("../helpers");
+const { HttpError, validateUuid } = require("../helpers");
 
 const isVerifyTokenValid = async (req, res, next) => {
   try {
     const { token } = req.params;
 
-    const user = await usersServices.findUser({ verificationToken: token });
+    const isValid = validateUuid(token);
+    if (!isValid) {
+      return next(HttpError(400, "Verification token not valid"));
+    }
 
+    const user = await usersServices.findUser({ verificationToken: token });
     if (!user) {
       return next(HttpError(404, "Not found"));
     }

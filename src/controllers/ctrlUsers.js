@@ -1,11 +1,10 @@
-const { v4 } = require("uuid");
-
 const usersServices = require("../service/users");
 const {
   HttpError,
   createPairToken,
   hashPassword,
   getPayloadActionToken,
+  getUuid,
 } = require("../helpers");
 const { sendMail } = require("../middlewares");
 
@@ -25,7 +24,7 @@ const currentUser = async (req, res) => {
 const register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const verificationToken = v4();
+    const verificationToken = getUuid();
 
     const hashedPassword = await hashPassword(password);
 

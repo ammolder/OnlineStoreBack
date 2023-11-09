@@ -8,6 +8,8 @@ const {
   getPayloadActionToken,
   hashPassword,
   comparePasswords,
+  getUuid,
+  validateUuid,
 } = require("./crypto");
 
 module.exports = {
@@ -20,4 +22,6 @@ module.exports = {
   getPayloadActionToken,
   hashPassword,
   comparePasswords,
+  getUuid,
+  validateUuid,
 };

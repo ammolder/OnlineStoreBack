@@ -8,6 +8,7 @@ const isEmailUnique = require("./isEmailUnique");
 const isPasswordsSame = require("./isPasswordsSame");
 const isEmailNotVerified = require("./isEmailNotVerified");
 const isVerifyTokenValid = require("./isVerifyTokenValid");
+const isItemExists = require("./isItemExists");
 
 module.exports = {
   checkAccessToken,
@@ -20,4 +21,5 @@ module.exports = {
   isPasswordsSame,
   isEmailNotVerified,
   isVerifyTokenValid,
+  isItemExists,
 };

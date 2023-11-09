@@ -7,7 +7,7 @@ async function getAllItems(req, res, next) {
     const { page, limit } = req.query;
     const skip = (page - 1) * limit;
 
-    const items = await itemsServices.getByParams(page, limit, skip);
+    const items = await itemsServices.findByParams(page, limit, skip);
 
     return res.json(items);
   } catch (e) {
@@ -15,14 +15,8 @@ async function getAllItems(req, res, next) {
   }
 }
 
-async function getItemById(req, res, next) {
-  const { itemId } = req.params;
-  const item = await modelItems.findById(itemId);
-
-  if (!item) {
-    return next(HttpError(404));
-  }
-  return res.json(item);
+async function getItemById(req, res) {
+  return res.json(req.item);
 }
 
 async function createItem(req, res, next) {

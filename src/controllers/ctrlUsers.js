@@ -98,31 +98,35 @@ const sendVerify = async (req, res, next) => {
 };
 
 const updateUser = async (req, res, next) => {
-  const { _id } = req.user;
-  const { email } = req.body;
-  const userByEmail = await usersServices.findUser({ email }, false);
+  try {
+    const { _id } = req.user;
+    const { email } = req.body;
+    const userByEmail = await usersServices.findUser({ email }, false);
 
-  if (userByEmail && String(userByEmail._id) !== String(_id)) {
-    throw HttpError(409, "Email is not compare");
+    if (userByEmail && String(userByEmail._id) !== String(_id)) {
+      return next(HttpError(409, "Email is not compare"));
+    }
+
+    const avatarUrl = req.file?.path;
+
+    const updatedFields = {
+      ...req.body,
+      ...(avatarUrl && { avatarUrl }), // add avatarUrl if it's defined
+    };
+
+    const user = await usersServices.updateUserById(_id, updatedFields, false);
+
+    if (!user) {
+      return next(HttpError(404, "User not found"));
+    }
+
+    const { token, password, verificationToken, ...updatedUser } =
+      user.toObject();
+
+    res.status(200).json({ message: "UserInfo updated", user: updatedUser });
+  } catch (e) {
+    next(e);
   }
-
-  const avatarUrl = req.file?.path;
-
-  const updatedFields = {
-    ...req.body,
-    ...(avatarUrl && { avatarUrl }), // add avatarUrl if it's defined
-  };
-
-  const user = await usersServices.updateUserById(_id, updatedFields, false);
-
-  if (!user) {
-    throw HttpError(404, "User not found");
-  }
-
-  const { token, password, verificationToken, ...updatedUser } =
-    user.toObject();
-
-  res.status(200).json({ message: "UserInfo updated", user: updatedUser });
 };
 
 const login = async (req, res, next) => {

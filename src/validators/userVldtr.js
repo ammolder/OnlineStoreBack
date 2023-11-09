@@ -34,6 +34,10 @@ const resetPassVldtr = Joi.object({
   newPassword: Joi.string().min(6).required(),
 });
 
+const sendVerifyVldtr = Joi.object({
+  email: Joi.string().pattern(emailRegexp).required(),
+});
+
 module.exports = {
   registerVldtr,
   loginVldtr,
@@ -43,4 +47,5 @@ module.exports = {
   // resetPassword,
   updateUserVldtr,
   resetPassVldtr,
+  sendVerifyVldtr,
 };

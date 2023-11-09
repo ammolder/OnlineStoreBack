@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { v4, validate } = require("uuid");
 
 const {
   accessExpiresToken,
@@ -47,6 +48,10 @@ const hashPassword = (password) => bcrypt.hash(password, 10);
 
 const comparePasswords = (pass, hashPass) => bcrypt.compare(pass, hashPass);
 
+const getUuid = () => v4();
+
+const validateUuid = (uuid) => validate(uuid);
+
 module.exports = {
   createPairToken,
   getPayloadRefreshToken,
@@ -54,4 +59,6 @@ module.exports = {
   hashPassword,
   comparePasswords,
   getPayloadActionToken,
+  getUuid,
+  validateUuid,
 };

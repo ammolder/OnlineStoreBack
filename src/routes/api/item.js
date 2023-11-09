@@ -8,14 +8,14 @@ const {
   createItem,
   deleteItem,
 } = require("../../controllers/ctrlItems");
-const { validateBody, isValidId, checkAccessToken } = require("../../middlewares");
+const { validateBody, isValidId, checkAccessToken, isItemExists } = require("../../middlewares");
 const { addItemVldtr, changeStatusItemVldtr } = require("../../validators/itemVldtr");
 
 const router = express.Router();
 
 router.get("/", getAllItems);
 
-router.get("/:itemId", isValidId, getItemById);
+router.get("/:itemId", isValidId, isItemExists, getItemById);
 
 router.post("/", checkAccessToken, validateBody(addItemVldtr), createItem);
 router.put(
@@ -33,6 +33,6 @@ router.patch(
   changeStatus,
 );
 
-router.delete("/:itemId", checkAccessToken, isValidId, deleteItem);
+router.delete("/:itemId", checkAccessToken, isValidId, isItemExists, deleteItem);
 
 module.exports = router;

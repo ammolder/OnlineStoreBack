@@ -1,11 +1,10 @@
-const { v4 } = require("uuid");
-
 const usersServices = require("../service/users");
 const {
   HttpError,
   createPairToken,
   hashPassword,
   getPayloadActionToken,
+  getUuid,
 } = require("../helpers");
 const { sendMail } = require("../middlewares");
 
@@ -25,7 +24,7 @@ const currentUser = async (req, res) => {
 const register = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const verificationToken = v4();
+    const verificationToken = getUuid();
 
     const hashedPassword = await hashPassword(password);
 
@@ -68,71 +67,66 @@ const register = async (req, res, next) => {
 };
 
 const verifyEmail = async (req, res, next) => {
-  const { token } = req.params;
-  const user = await usersServices.findUser({ verificationToken: token });
+  try {
+    const { _id } = req.user;
 
-  if (!user) {
-    throw HttpError(404, "Not found");
+    await usersServices.updateUserById(_id, {
+      verified: true,
+      verificationToken: null,
+    });
+
+    return res.status(200).json("Verification successful");
+  } catch (e) {
+    next(e);
   }
-
-  await usersServices.updateUserById(user._id, {
-    verified: true,
-    verificationToken: null,
-  });
-  console.log("token :", token);
-
-  return res.status(200).json("Verification successful");
 };
 
 const sendVerify = async (req, res, next) => {
-  const { email } = req.body;
-  const user = await usersServices.findUser({ email });
-  const verificationToken = user.verificationToken;
+  try {
+    const { email } = req.body;
 
-  if (!user) {
-    throw HttpError(400, "missing required field email");
+    await sendMail({
+      to: email,
+      subject: "Please confirm your email",
+      html: `<a href='http://localhost:3000/api/user/verify/${req.verificationToken}'>Confirm your email</a>`,
+    });
+
+    return res.status(200).json("Verification email sent");
+  } catch (e) {
+    next(e);
   }
-
-  if (user.verified) {
-    throw HttpError(400, "Verification has already been passed");
-  }
-
-  await sendMail({
-    to: email,
-    subject: "Please confirm your email",
-    html: `<a href='http://localhost:3000/api/user/verify/${verificationToken}'>Confirm your email</a>`,
-  });
-  console.log("verified :", user.verified);
-
-  return res.status(200).json("Verification email sent");
 };
 
 const updateUser = async (req, res, next) => {
-  const { _id } = req.user;
-  const { email } = req.body;
-  const userByEmail = await usersServices.findUser({ email }, false);
+  try {
+    const { _id } = req.user;
+    const { email } = req.body;
+    const userByEmail = await usersServices.findUser({ email }, false);
 
-  if (userByEmail && String(userByEmail._id) !== String(_id)) {
-    throw HttpError(409, "Email is not compare");
+    if (userByEmail && String(userByEmail._id) !== String(_id)) {
+      return next(HttpError(409, "Email is not compare"));
+    }
+
+    const avatarUrl = req.file?.path;
+
+    const updatedFields = {
+      ...req.body,
+      ...(avatarUrl && { avatarUrl }), // add avatarUrl if it's defined
+    };
+
+    const user = await usersServices.updateUserById(_id, updatedFields, false);
+
+    if (!user) {
+      return next(HttpError(404, "User not found"));
+    }
+
+    const { token, password, verificationToken, ...updatedUser } =
+      user.toObject();
+
+    res.status(200).json({ message: "UserInfo updated", user: updatedUser });
+  } catch (e) {
+    next(e);
   }
-
-  const avatarUrl = req.file?.path;
-
-  const updatedFields = {
-    ...req.body,
-    ...(avatarUrl && { avatarUrl }), // add avatarUrl if it's defined
-  };
-
-  const user = await usersServices.updateUserById(_id, updatedFields, false);
-
-  if (!user) {
-    throw HttpError(404, "User not found");
-  }
-
-  const { token, password, verificationToken, ...updatedUser } =
-    user.toObject();
-
-  res.status(200).json({ message: "UserInfo updated", user: updatedUser });
 };
 
 const login = async (req, res, next) => {
@@ -201,14 +195,18 @@ const resetPassword = async (req, res, next) => {
 
 const forgotPassword = async (req, res) => {};
 
-const logout = async (req, res) => {
-  const { _id } = req.user;
-  await usersServices.updateUserById(_id, {
-    accessToken: "",
-    refreshToken: "",
-  });
+const logout = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    await usersServices.updateUserById(_id, {
+      accessToken: "",
+      refreshToken: "",
+    });
 
-  res.status(204).json("Successful logout");
+    res.status(204).json("Successful logout");
+  } catch (e) {
+    next(e);
+  }
 };
 // forgotPassword
 module.exports = {

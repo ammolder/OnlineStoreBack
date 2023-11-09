@@ -1,36 +1,34 @@
+const { itemsServices } = require("../service");
 const { HttpError } = require("../helpers");
 const { modelItems } = require("../models/item");
 
 async function getAllItems(req, res, next) {
-  const { page, limit } = req.query;
-  const skip = (page - 1) * limit;
-  const items = await modelItems.find().skip(skip).limit(limit);
-  return res.json(items);
+  try {
+    const { page, limit } = req.query;
+    const skip = (page - 1) * limit;
+
+    const items = await itemsServices.findByParams(page, limit, skip);
+
+    return res.json(items);
+  } catch (e) {
+    next(e);
+  }
 }
 
-async function getItemById(req, res, next) {
-  const { itemId } = req.params;
-  const item = await modelItems.findById(itemId);
-
-  if (!item) {
-    return next(HttpError(404));
-  }
-  return res.json(item);
+async function getItemById(req, res) {
+  return res.json(req.item);
 }
 
 async function createItem(req, res, next) {
-  const { title, price, sex, category, size, description, status } = req.body;
-  const newItem = await modelItems.create({
-    title,
-    price,
-    sex,
-    category,
-    size,
-    description,
-    status,
-  });
+  try {
+    const newItem = req.body;
 
-  res.status(201).json(newItem);
+    const createdItem = await itemsServices.create(newItem);
+
+    res.status(201).json(createdItem);
+  } catch (e) {
+    next(e);
+  }
 }
 
 async function updateItem(req, res, next) {
@@ -64,18 +62,15 @@ async function changeStatus(req, res, next) {
 }
 
 async function deleteItem(req, res, next) {
-  const { itemId } = req.params;
-  console.log("req.params :", req.params);
-  console.log("itemId :", itemId);
-  const item = await modelItems.findById(itemId);
-  console.log("item :", item);
+  try {
+    const itemId = req.item._id;
 
-  if (!item) {
-    return next(HttpError(404));
+    await itemsServices.delete(itemId);
+
+    return res.status(200).json({ message: "Item was deleted" });
+  } catch (e) {
+    next(e);
   }
-
-  await modelItems.findByIdAndRemove(itemId);
-  return res.status(200).json({ message: "Item was deleted" });
 }
 
 module.exports = {

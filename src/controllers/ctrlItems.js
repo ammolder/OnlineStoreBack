@@ -62,18 +62,15 @@ async function changeStatus(req, res, next) {
 }
 
 async function deleteItem(req, res, next) {
-  const { itemId } = req.params;
-  console.log("req.params :", req.params);
-  console.log("itemId :", itemId);
-  const item = await modelItems.findById(itemId);
-  console.log("item :", item);
+  try {
+    const itemId = req.item._id;
 
-  if (!item) {
-    return next(HttpError(404));
+    await itemsServices.delete(itemId);
+
+    return res.status(200).json({ message: "Item was deleted" });
+  } catch (e) {
+    next(e);
   }
-
-  await modelItems.findByIdAndRemove(itemId);
-  return res.status(200).json({ message: "Item was deleted" });
 }
 
 module.exports = {

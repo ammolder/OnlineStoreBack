@@ -15,6 +15,8 @@ class ItemsServices {
 
     return newItem;
   }
+
+  delete = async (itemId) => modelItems.findByIdAndRemove(itemId);
 }
 
 const itemsServices = new ItemsServices();

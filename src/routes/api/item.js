@@ -33,6 +33,6 @@ router.patch(
   changeStatus,
 );
 
-router.delete("/:itemId", checkAccessToken, isValidId, deleteItem);
+router.delete("/:itemId", checkAccessToken, isValidId, isItemExists, deleteItem);
 
 module.exports = router;

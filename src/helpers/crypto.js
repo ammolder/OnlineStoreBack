@@ -35,6 +35,14 @@ const getPayloadAccessToken = (token) => {
   }
 };
 
+const getPayloadActionToken = (token) => {
+  try {
+    return jwt.verify(token, ACCESS_SECRET_KEY);
+  } catch {
+    throw HttpError(400, "Reset password token is invalid or has expired");
+  }
+};
+
 const hashPassword = (password) => bcrypt.hash(password, 10);
 
 const comparePasswords = (pass, hashPass) => bcrypt.compare(pass, hashPass);
@@ -45,4 +53,5 @@ module.exports = {
   getPayloadAccessToken,
   hashPassword,
   comparePasswords,
+  getPayloadActionToken,
 };

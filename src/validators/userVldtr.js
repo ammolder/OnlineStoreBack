@@ -29,6 +29,11 @@ const emailVldtr = Joi.object({
   email: Joi.string().pattern(emailRegexp).required(),
 });
 
+const resetPassVldtr = Joi.object({
+  token: Joi.string().required(),
+  newPassword: Joi.string().min(6).required(),
+});
+
 module.exports = {
   registerVldtr,
   loginVldtr,
@@ -37,4 +42,5 @@ module.exports = {
   // forgotPassword
   // resetPassword,
   updateUserVldtr,
+  resetPassVldtr,
 };

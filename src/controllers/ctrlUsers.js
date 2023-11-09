@@ -85,26 +85,19 @@ const verifyEmail = async (req, res, next) => {
 };
 
 const sendVerify = async (req, res, next) => {
-  const { email } = req.body;
-  const user = await usersServices.findUser({ email });
-  const verificationToken = user.verificationToken;
+  try {
+    const { email } = req.body;
 
-  if (!user) {
-    throw HttpError(400, "missing required field email");
+    await sendMail({
+      to: email,
+      subject: "Please confirm your email",
+      html: `<a href='http://localhost:3000/api/user/verify/${req.verificationToken}'>Confirm your email</a>`,
+    });
+
+    return res.status(200).json("Verification email sent");
+  } catch (e) {
+    next(e);
   }
-
-  if (user.verified) {
-    throw HttpError(400, "Verification has already been passed");
-  }
-
-  await sendMail({
-    to: email,
-    subject: "Please confirm your email",
-    html: `<a href='http://localhost:3000/api/user/verify/${verificationToken}'>Confirm your email</a>`,
-  });
-  console.log("verified :", user.verified);
-
-  return res.status(200).json("Verification email sent");
 };
 
 const updateUser = async (req, res, next) => {

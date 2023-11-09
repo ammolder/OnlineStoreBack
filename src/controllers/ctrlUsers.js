@@ -191,14 +191,18 @@ const resetPassword = async (req, res, next) => {
 
 const forgotPassword = async (req, res) => {};
 
-const logout = async (req, res) => {
-  const { _id } = req.user;
-  await usersServices.updateUserById(_id, {
-    accessToken: "",
-    refreshToken: "",
-  });
+const logout = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    await usersServices.updateUserById(_id, {
+      accessToken: "",
+      refreshToken: "",
+    });
 
-  res.status(204).json("Successful logout");
+    res.status(204).json("Successful logout");
+  } catch (e) {
+    next(e);
+  }
 };
 // forgotPassword
 module.exports = {

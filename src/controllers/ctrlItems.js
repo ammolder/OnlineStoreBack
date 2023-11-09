@@ -20,18 +20,15 @@ async function getItemById(req, res) {
 }
 
 async function createItem(req, res, next) {
-  const { title, price, sex, category, size, description, status } = req.body;
-  const newItem = await modelItems.create({
-    title,
-    price,
-    sex,
-    category,
-    size,
-    description,
-    status,
-  });
+  try {
+    const newItem = req.body;
 
-  res.status(201).json(newItem);
+    const createdItem = await itemsServices.create(newItem);
+
+    res.status(201).json(createdItem);
+  } catch (e) {
+    next(e);
+  }
 }
 
 async function updateItem(req, res, next) {

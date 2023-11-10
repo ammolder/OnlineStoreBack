@@ -43,6 +43,9 @@ const itemSchema = new Schema(
       required: [true, "Status is required"],
       default: true,
     },
+    owner: {
+      type: Schema.Types.ObjectId, ref: "user"
+    },
   },
   { versionKey: false },
 );

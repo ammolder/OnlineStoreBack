@@ -99,11 +99,13 @@ const sendVerify = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   try {
-    const { _id } = req.user;
+    const { _id: userId } = req.user;
     const { email } = req.body;
     const userByEmail = await usersServices.findUser({ email }, false);
 
-    if (userByEmail && String(userByEmail._id) !== String(_id)) {
+    const isEmailsCompare = userId.equals(userByEmail._id);
+
+    if (userByEmail && !isEmailsCompare) {
       return next(HttpError(409, "Email is not compare"));
     }
 
@@ -114,7 +116,7 @@ const updateUser = async (req, res, next) => {
       ...(avatarUrl && { avatarUrl }), // add avatarUrl if it's defined
     };
 
-    const user = await usersServices.updateUserById(_id, updatedFields, false);
+    const user = await usersServices.updateUserById(userId, updatedFields, false);
 
     if (!user) {
       return next(HttpError(404, "User not found"));

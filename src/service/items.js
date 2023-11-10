@@ -10,7 +10,7 @@ class ItemsServices {
     const newItem = await modelItems.create(item);
 
     if (!newItem) {
-      throw HttpError(400, "Error create user");
+      throw HttpError(400, "Error create item");
     }
 
     return newItem;

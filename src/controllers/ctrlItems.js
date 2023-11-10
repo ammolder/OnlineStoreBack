@@ -21,7 +21,8 @@ async function getItemById(req, res) {
 
 async function createItem(req, res, next) {
   try {
-    const newItem = req.body;
+    const { _id } = req.user;
+    const newItem = { ...req.body, owner: _id };
 
     const createdItem = await itemsServices.create(newItem);
 

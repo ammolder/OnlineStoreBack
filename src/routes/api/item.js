@@ -8,7 +8,13 @@ const {
   createItem,
   deleteItem,
 } = require("../../controllers/ctrlItems");
-const { validateBody, isValidId, checkAccessToken, isItemExists } = require("../../middlewares");
+const {
+  validateBody,
+  isValidId,
+  checkAccessToken,
+  isItemExists,
+  isItemYours,
+} = require("../../middlewares");
 const { addItemVldtr, changeStatusItemVldtr } = require("../../validators/itemVldtr");
 
 const router = express.Router();
@@ -33,6 +39,13 @@ router.patch(
   changeStatus,
 );
 
-router.delete("/:itemId", checkAccessToken, isValidId, isItemExists, deleteItem);
+router.delete(
+  "/:itemId",
+  checkAccessToken,
+  isValidId,
+  isItemExists,
+  isItemYours,
+  deleteItem,
+);
 
 module.exports = router;

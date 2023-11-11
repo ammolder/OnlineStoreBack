@@ -10,6 +10,7 @@ const isEmailNotVerified = require("./isEmailNotVerified");
 const isVerifyTokenValid = require("./isVerifyTokenValid");
 const isItemExists = require("./isItemExists");
 const isItemYours = require("./isItemYours");
+const isUserExists = require("./isUserExists");
 
 module.exports = {
   checkAccessToken,
@@ -24,4 +25,5 @@ module.exports = {
   isVerifyTokenValid,
   isItemExists,
   isItemYours,
+  isUserExists,
 };

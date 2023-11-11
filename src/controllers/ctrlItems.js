@@ -19,6 +19,20 @@ async function getItemById(req, res) {
   return res.json(req.item);
 }
 
+async function getUserItems(req, res, next) {
+  try {
+    const { user } = req;
+    const { page, limit } = req.query;
+    const skip = (page - 1) * limit;
+
+    const userItems = await itemsServices.findByUserId(user._id, skip, limit);
+
+    return res.json(userItems);
+  } catch (e) {
+    next(e);
+  }
+}
+
 async function createItem(req, res, next) {
   try {
     const { _id } = req.user;
@@ -81,4 +95,5 @@ module.exports = {
   updateItem,
   changeStatus,
   deleteItem,
+  getUserItems,
 };

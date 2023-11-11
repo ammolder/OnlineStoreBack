@@ -21,20 +21,20 @@ const router = express.Router();
 
 router.get("/", getAllItems);
 
-router.get("/:itemId", isValidId, isItemExists, getItemById);
+router.get("/:itemId", isValidId(), isItemExists, getItemById);
 
 router.post("/", checkAccessToken, validateBody(addItemVldtr), createItem);
 router.put(
   "/:itemId",
   checkAccessToken,
-  isValidId,
+  isValidId(),
   validateBody(addItemVldtr),
   updateItem,
 );
 router.patch(
   "/:itemId/status",
   checkAccessToken,
-  isValidId,
+  isValidId(),
   validateBody(changeStatusItemVldtr),
   changeStatus,
 );
@@ -42,7 +42,7 @@ router.patch(
 router.delete(
   "/:itemId",
   checkAccessToken,
-  isValidId,
+  isValidId(),
   isItemExists,
   isItemYours,
   deleteItem,

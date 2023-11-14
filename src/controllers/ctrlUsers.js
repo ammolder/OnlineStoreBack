@@ -7,6 +7,7 @@ const {
   getUuid,
 } = require("../helpers");
 const { sendMail } = require("../middlewares");
+const { FRONTEND_URL } = process.env;
 
 const currentUser = async (req, res) => {
   const { name, email, phone, birthday, avatarUrl, verified } = req.user;
@@ -210,7 +211,25 @@ const logout = async (req, res, next) => {
     next(e);
   }
 };
-// forgotPassword
+
+const googleAuth = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const payload = { id: _id };
+
+    const [accessToken, refreshToken] = createPairToken(payload);
+
+    await usersServices.updateUserById(_id, {
+      accessToken,
+      refreshToken,
+    }, false);
+
+    res.redirect(`${FRONTEND_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`);
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   currentUser,
   register,
@@ -222,4 +241,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   logout,
+  googleAuth,
 };

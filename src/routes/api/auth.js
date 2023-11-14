@@ -1,5 +1,7 @@
 const express = require("express");
+const passport = require("passport");
 
+require("../../middlewares/googeleAuthenticate");
 const {
   validateBody,
   checkAccessToken,
@@ -11,7 +13,6 @@ const {
   isVerifyTokenValid,
   isValidId,
   isUserExists,
-  //   passport,
 } = require("../../middlewares");
 const ctrl = require("../../controllers/ctrlUsers");
 const itemsCtrl = require("../../controllers/ctrlItems");
@@ -28,6 +29,15 @@ const router = express.Router();
 
 router.get("/current", checkAccessToken, ctrl.currentUser);
 router.get("/:userId/items", isValidId("userId"), isUserExists, itemsCtrl.getUserItems);
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["email", "profile"] }),
+);
+router.get(
+  "/google-callback",
+  passport.authenticate("google", { session: false }),
+  ctrl.googleAuth,
+);
 router.post("/register", validateBody(registerVldtr), isEmailUnique, ctrl.register);
 router.get("/verify/:token", isVerifyTokenValid, ctrl.verifyEmail);
 router.post("/verify", validateBody(sendVerifyVldtr), isEmailNotVerified, ctrl.sendVerify);
@@ -43,15 +53,5 @@ router.patch(
   validateBody(updateUserVldtr),
   ctrl.updateUser,
 );
-
-// router.get(
-//   "/google",
-//   passport.authenticate("google", { scope: ["email", "profile"] })
-// );
-// router.get(
-//   "/google/callback",
-//   passport.authenticate("google", { session: false }),
-//   ctrl.authGoogle
-// );
 
 module.exports = router;

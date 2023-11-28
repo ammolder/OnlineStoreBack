@@ -8,13 +8,15 @@ const isItemYours = (req, res, next) => {
     const isYours = userId.equals(ownerId);
 
     if (!isYours) {
-      return next(HttpError(403, "You cannot delete an item that does not belong to you"));
+      return next(
+        HttpError(403, "You cannot interact with an item that you don't own")
+      );
     }
 
     next();
   } catch (e) {
     next(e);
   }
-}
+};
 
 module.exports = isItemYours;

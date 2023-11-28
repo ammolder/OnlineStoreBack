@@ -6,6 +6,7 @@ const isValidId = require("./isValidId");
 const uploadCloud = require("./uploadCloud");
 const isEmailUnique = require("./isEmailUnique");
 const isPasswordsSame = require("./isPasswordsSame");
+const isUserVerified = require("./isUserVerified");
 const isEmailNotVerified = require("./isEmailNotVerified");
 const isVerifyTokenValid = require("./isVerifyTokenValid");
 const isItemExists = require("./isItemExists");
@@ -20,6 +21,7 @@ module.exports = {
   uploadCloud,
   isEmailUnique,
   isPasswordsSame,
+  isUserVerified,
   isEmailNotVerified,
   isVerifyTokenValid,
   isItemExists,

@@ -25,7 +25,7 @@ const router = express.Router();
 
 router.get("/", getAllItems);
 
-router.get("/:itemId", isValidId, isItemExists, getItemById);
+router.get("/:itemId", isValidId(), isItemExists, getItemById);
 
 router.post(
   "/",

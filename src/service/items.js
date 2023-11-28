@@ -6,6 +6,8 @@ class ItemsServices {
 
   findById = (itemId) => modelItems.findById(itemId);
 
+  findByUserId = (userId, skip, limit) => modelItems.find({ owner: userId }).skip(skip).limit(limit);
+
   create = async (item) => {
     const newItem = await modelItems.create(item);
 

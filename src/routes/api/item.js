@@ -13,6 +13,7 @@ const {
   isValidId,
   checkAccessToken,
   isUserVerified,
+  isAdmin,
   isItemExists,
   isItemYours,
 } = require("../../middlewares");
@@ -32,14 +33,16 @@ router.post(
   checkAccessToken,
   isUserVerified,
   validateBody(addItemVldtr),
+  isAdmin,
   createItem
 );
 router.put(
   "/:itemId",
   checkAccessToken,
-  isValidId,
+  isValidId(),
   isUserVerified,
   validateBody(addItemVldtr),
+  isAdmin,
   isItemExists,
   isItemYours,
   updateItem
@@ -47,9 +50,10 @@ router.put(
 router.patch(
   "/:itemId/status",
   checkAccessToken,
-  isValidId,
+  isValidId(),
   isUserVerified,
   validateBody(changeStatusItemVldtr),
+  isAdmin,
   isItemExists,
   isItemYours,
   changeStatus
@@ -59,7 +63,8 @@ router.delete(
   "/:itemId",
   checkAccessToken,
   isUserVerified,
-  isValidId,
+  isValidId(),
+  isAdmin,
   isItemExists,
   isItemYours,
   deleteItem

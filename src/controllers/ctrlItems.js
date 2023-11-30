@@ -48,11 +48,6 @@ async function createItem(req, res, next) {
 
 async function updateItem(req, res, next) {
   const { itemId } = req.params;
-  // const { title, price, sex, category, size, description, status } = req.body;
-
-  // if (!title & !price & !sex & !category & !size & !description & !status) {
-  //   return next(HttpError(400, "missing fields"));
-  // }
   const updateItem = await modelItems.findByIdAndUpdate(itemId, req.body);
 
   if (!updateItem) {

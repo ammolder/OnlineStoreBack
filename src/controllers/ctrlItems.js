@@ -47,28 +47,36 @@ async function createItem(req, res, next) {
 }
 
 async function updateItem(req, res, next) {
-  const { itemId } = req.params;
-  const updateItem = await modelItems.findByIdAndUpdate(itemId, req.body);
+  try {
+    const { itemId } = req.params;
+    const updateItem = await modelItems.findByIdAndUpdate(itemId, req.body);
 
-  if (!updateItem) {
-    return next(HttpError(400, "missing fields"));
+    if (!updateItem) {
+      return next(HttpError(400, "missing fields"));
+    }
+    const item = await modelItems.findById(itemId);
+
+    return res.status(200).json(item);
+  } catch (e) {
+    next(e);
   }
-  const item = await modelItems.findById(itemId);
-
-  return res.status(200).json(item);
 }
 
 async function changeStatus(req, res, next) {
-  const { itemId } = req.params;
-  const { status } = req.body;
-  const updateItem = await modelItems.findByIdAndUpdate(itemId, { status });
+  try {
+    const { itemId } = req.params;
+    const { status } = req.body;
+    const updateItem = await modelItems.findByIdAndUpdate(itemId, { status });
 
-  if (!updateItem) {
-    return next(HttpError(400));
+    if (!updateItem) {
+      return next(HttpError(400));
+    }
+    const item = await modelItems.findById(itemId);
+
+    return res.status(200).json(item);
+  } catch (e) {
+    next(e);
   }
-  const item = await modelItems.findById(itemId);
-
-  return res.status(200).json(item);
 }
 
 async function deleteItem(req, res, next) {

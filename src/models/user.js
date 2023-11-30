@@ -5,6 +5,10 @@ const { emailRegexp } = require("../constants/constantsRegexp");
 
 const userSchema = new Schema(
   {
+    admin: {
+      type: Boolean,
+      default: false,
+    },
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -51,14 +55,13 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Verify token is required"],
     },
-    // "facebook":""
     resetPasswordToken: {
       type: String,
       default: null,
     },
   },
   { versionKey: false },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 userSchema.post("save", handleMongooseError);

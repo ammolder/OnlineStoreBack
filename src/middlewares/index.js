@@ -12,6 +12,7 @@ const isVerifyTokenValid = require("./isVerifyTokenValid");
 const isItemExists = require("./isItemExists");
 const isItemYours = require("./isItemYours");
 const isUserExists = require("./isUserExists");
+const isAdmin = require("./isAdmin");
 
 module.exports = {
   checkAccessToken,
@@ -28,4 +29,5 @@ module.exports = {
   isItemExists,
   isItemYours,
   isUserExists,
+  isAdmin,
 };

@@ -1,7 +1,11 @@
 const { Schema, model } = require("mongoose");
 
 const { handleMongooseError } = require("../helpers");
-const { typeSex, typeCategory, typeSize } = require("../constants/constantsItem");
+const {
+  typeSex,
+  typeCategory,
+  typeSize,
+} = require("../constants/constantsItem");
 
 const itemSchema = new Schema(
   {
@@ -43,11 +47,15 @@ const itemSchema = new Schema(
       required: [true, "Status is required"],
       default: true,
     },
+    favorite: {
+      type: Boolean,
+    },
     owner: {
-      type: Schema.Types.ObjectId, ref: "user"
+      type: Schema.Types.ObjectId,
+      ref: "user",
     },
   },
-  { versionKey: false },
+  { versionKey: false }
 );
 
 itemSchema.post("save", handleMongooseError);
